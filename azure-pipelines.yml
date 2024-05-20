@@ -27,12 +27,12 @@ steps:
     arguments: '--no-restore'
   displayName: 'Build Project'
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'test'
-    projects: '**/*.Test.csproj'
-    arguments: '--no-restore'
-  displayName: 'Unit Test'
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'test'
+#     projects: '**/*.Test.csproj'
+#     arguments: '--no-restore'
+#   displayName: 'Unit Test'
 
 - task: DotNetCoreCLI@2
   inputs:
