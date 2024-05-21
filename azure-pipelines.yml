@@ -1,50 +1,80 @@
-# ASP.NET Core
-# Build and test ASP.NET Core projects targeting .NET Core.
-# Add steps that run tests, create a NuGet package, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-name: dotnetcoreapi
+
+
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+name: ESHOPONWEB-CI-CD
 trigger:
 - master
 
-pool:
-  vmImage: 'ubuntu-latest'
+resources:
+ repositories:
+   - repository: self 
+     trigger: none 
 
-variables:
-  buildConfiguration: 'Release'
+stages:
+  - stage: Build 
+    displayName: Build dotnet solution 
+    jobs:
+    - job: Build 
+      pool:
+        vmImage: ubuntu-latest
+      steps:
+      - task: DotNetCoreCLI@2
+        displayName: Restore 
+        inputs: 
+          command: 'restore'
+          projects: '**/*.sln'
+          feedsToUse: 'select'
+      - task: DotNetCoreCLI@2
+        displayName: Build 
+        inputs: 
+          command: 'build'
+          projects: '**/*.sln'
+      # - task: DotNetCoreCLI@2
+      #   displayName: Test 
+      #   inputs:
+      #     command: 'test'
+      #     projects: 'tests/UnitTests/*.csproj'
+      - task: DotNetCoreCLI@2
+        displayName: Publish 
+        inputs:
+          command: 'publish'
+          publishWebProjects: true
+          arguments: '-o $(Build.ArtifactStagingDirectory)'
+      - task: PublishBuildArtifacts@1
+        displayName: Publish artifacts 
+        inputs:
+         PathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+         ArtifactName: Website 
 
-steps:
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'restore'
-    projects: '**/*.csproj'
-  displayName: 'Restore Package'
+  - stage: Development 
+    displayName: Dev
+    jobs:
+    - job: Deploy
+      pool:
+        vmImage: 'windows-latest'
+      steps:
+        - task: DownloadBuildArtifacts@0
+          inputs: 
+            buildType: 'current'
+            downloadType: 'single'
+            artifactName: 'Website'
+            downloadPath: '$(Build.ArtifactStagingDirectory)'   
+        - task: AzureRmWebAppDeployment@4
+          inputs:
+            ConnectionType: 'AzureRM'
+            azureSubscription: 'mayservconn'
+            appType: 'webApp'
+            WebAppName: 'PHCENSUSapp'
+            packageForLinux: '$(Build.ArtifactStagingDirectory)/**/Web.zip'
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/*.csproj'
-    arguments: '--no-restore'
-  displayName: 'Build Project'
-
-# - task: DotNetCoreCLI@2
-#   inputs:
-#     command: 'test'
-#     projects: '**/*.Test.csproj'
-#     arguments: '--no-restore'
-#   displayName: 'Unit Test'
-
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'publish'
-    publishWebProjects: true 
-    projects: '**/CustomerApi.csproj'
-    arguments: '--configuration $(buildConfiguration) --no-restore'
-    modifyOutputPath: false
-  displayName: 'Publish Customer API'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-  displayName: 'Publish Artifacts'
+  
