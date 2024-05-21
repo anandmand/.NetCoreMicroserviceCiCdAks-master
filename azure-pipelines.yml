@@ -75,6 +75,6 @@ stages:
             azureSubscription: 'mayservconn'
             appType: 'webApp'
             WebAppName: 'PHCENSUSapp'
-            packageForLinux: '$(Build.ArtifactStagingDirectory)/**/Web.zip'
+            packageForLinux: '$(Build.ArtifactStagingDirectory)/**/CustomerApi.zip'
 
   
