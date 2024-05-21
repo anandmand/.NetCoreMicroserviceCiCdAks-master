@@ -72,7 +72,7 @@ stages:
         - task: AzureRmWebAppDeployment@4
           inputs:
             ConnectionType: 'AzureRM'
-            azureSubscription: 'mayservconn'
+            azureSubscription: 'mayservconntest'
             appType: 'webApp'
             WebAppName: 'PHCENSUSapp'
             packageForLinux: '$(Build.ArtifactStagingDirectory)/**/CustomerApi.zip'
