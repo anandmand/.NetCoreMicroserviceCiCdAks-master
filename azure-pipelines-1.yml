@@ -39,11 +39,11 @@ stages:
         inputs: 
           command: 'build'
           projects: '**/*.sln'
-      # - task: DotNetCoreCLI@2
-      #   displayName: Test 
-      #   inputs:
-      #     command: 'test'
-      #     projects: 'tests/UnitTests/*.csproj'
+      - task: DotNetCoreCLI@2
+        displayName: Test 
+        inputs:
+          command: 'test'
+          projects: 'tests/UnitTests/*.csproj'
       - task: DotNetCoreCLI@2
         displayName: Publish 
         inputs:
