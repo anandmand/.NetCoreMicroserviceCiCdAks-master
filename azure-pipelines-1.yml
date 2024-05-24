@@ -97,9 +97,9 @@ stages:
            - task: AzureRmWebAppDeployment@4
              inputs:
                ConnectionType: 'AzureRM'
-               azureSubscription: 'mayservconn'
+               azureSubscription: 'mayservconntest'
                appType: 'webApp'
-               WebAppName: 'prkwebapp02'
+               WebAppName: 'PHCENSUSapp'
                packageForLinux: '$(Build.ArtifactStagingDirectory)/**/Web.zip'
   - stage: test 
     displayName: SIT2
