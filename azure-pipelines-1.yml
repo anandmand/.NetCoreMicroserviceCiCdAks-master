@@ -1,6 +1,3 @@
-
-
-
 # Starter pipeline
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
@@ -57,7 +54,7 @@ stages:
          ArtifactName: Website 
 
   - stage: Development 
-    displayName: dev_test
+    displayName: Dev
     jobs:
     - job: Deploy
       pool:
@@ -72,10 +69,62 @@ stages:
         - task: AzureRmWebAppDeployment@4
           inputs:
             ConnectionType: 'AzureRM'
-            azureSubscription: 'mayservconntest'
+            azureSubscription: 'mayservconn'
             appType: 'webApp'
-            WebAppName: 'PHCENSUSapp'
-            packageForLinux: '$(Build.ArtifactStagingDirectory)/**/CustomerApi.zip'
+            WebAppName: 'prkwebapp01'
+            packageForLinux: '$(Build.ArtifactStagingDirectory)/**/Web.zip'
 
-
-  
+  - stage: Deploy 
+    displayName: SIT1
+    dependsOn:
+    - Development
+    jobs:
+    - deployment: Deploy
+      environment: Dev_environment
+      pool:
+        vmImage: 'windows-2019'
+      strategy:
+       runOnce:
+         deploy:
+           steps:
+           - task: DownloadBuildArtifacts@0
+             inputs: 
+               buildType: 'current'
+               downloadType: 'single'
+               artifactName: 'Website'
+               downloadPath: '$(Build.ArtifactStagingDirectory)'
+       
+           - task: AzureRmWebAppDeployment@4
+             inputs:
+               ConnectionType: 'AzureRM'
+               azureSubscription: 'mayservconn'
+               appType: 'webApp'
+               WebAppName: 'prkwebapp02'
+               packageForLinux: '$(Build.ArtifactStagingDirectory)/**/Web.zip'
+  - stage: test 
+    displayName: SIT2
+    dependsOn:
+    - Development
+    jobs:
+    - deployment: Deploy
+      environment: dev_test
+      pool:
+        vmImage: 'windows-2019'
+      strategy:
+       runOnce:
+         deploy:
+           steps:
+           - task: DownloadBuildArtifacts@0
+             inputs: 
+               buildType: 'current'
+               downloadType: 'single'
+               artifactName: 'Website'
+               downloadPath: '$(Build.ArtifactStagingDirectory)'
+       
+           - task: AzureRmWebAppDeployment@4
+             inputs:
+               ConnectionType: 'AzureRM'
+               azureSubscription: 'mayservconntest'
+               appType: 'webApp'
+               WebAppName: 'PHCENSUSapp'
+               packageForLinux: '$(Build.ArtifactStagingDirectory)/**/CustomerApi.zip'
