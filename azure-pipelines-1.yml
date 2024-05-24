@@ -57,7 +57,7 @@ stages:
          ArtifactName: Website 
 
   - stage: Development 
-    displayName: Dev
+    displayName: dev_test
     jobs:
     - job: Deploy
       pool:
