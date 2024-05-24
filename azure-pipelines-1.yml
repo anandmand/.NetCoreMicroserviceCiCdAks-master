@@ -69,10 +69,10 @@ stages:
         - task: AzureRmWebAppDeployment@4
           inputs:
             ConnectionType: 'AzureRM'
-            azureSubscription: 'mayservconn'
+            azureSubscription: 'mayservconntest'
             appType: 'webApp'
-            WebAppName: 'prkwebapp01'
-            packageForLinux: '$(Build.ArtifactStagingDirectory)/**/Web.zip'
+            WebAppName: 'PHCENSUSapp'
+            packageForLinux: '$(Build.ArtifactStagingDirectory)/**/CustomerApi.zip'
 
   - stage: Deploy 
     displayName: SIT1
@@ -80,7 +80,7 @@ stages:
     - Development
     jobs:
     - deployment: Deploy
-      environment: Dev_environment
+      environment: dev_test
       pool:
         vmImage: 'windows-2019'
       strategy:
@@ -100,7 +100,7 @@ stages:
                azureSubscription: 'mayservconntest'
                appType: 'webApp'
                WebAppName: 'PHCENSUSapp'
-               packageForLinux: '$(Build.ArtifactStagingDirectory)/**/Web.zip'
+               packageForLinux: '$(Build.ArtifactStagingDirectory)/**/CustomerApi.zip'
   - stage: test 
     displayName: SIT2
     dependsOn:
